@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>活動紹介 ｜ ALL-IN GAS</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* ---- 活動紹介ページ固有 ---- */
+.intro-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:8px 0 10px; }
+.icard{ border:2px solid var(--ink); border-radius:16px; background:#fff; padding:22px; position:relative; overflow:hidden; }
+.icard .k{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); }
+.icard .n{ font-family:var(--font-round); font-weight:900; font-size:34px; line-height:1; margin-top:6px; }
+.icard .l{ font-size:13px; color:var(--ink-2); margin-top:6px; }
+
+/* 活動カテゴリ・大ブロック */
+.act-block{ border:2px solid var(--ink); border-radius:18px; background:#fff; overflow:hidden; margin-bottom:22px; }
+.act-block .head{ display:flex; align-items:center; gap:12px; padding:16px 24px; color:#fff; }
+.act-block .head .badge{ font-family:'Space Mono',monospace; font-size:12px; background:rgba(255,255,255,.22); padding:4px 10px; border-radius:7px; }
+.act-block .head h2{ font-family:var(--font-round); font-weight:900; font-size:22px; margin:0; }
+.act-block .head .tag{ margin-left:auto; font-family:var(--font-hand); font-size:14px; opacity:.92; }
+.act-block .body{ display:grid; grid-template-columns:repeat(3,1fr); }
+.act-block .cell{ padding:22px 24px; border-right:1.5px dashed var(--line); border-top:1.5px dashed var(--line); }
+.act-block .body .cell:nth-child(3n){ border-right:none; }
+.act-block .cell .no{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); }
+.act-block .cell h3{ font-family:var(--font-round); font-weight:900; font-size:17px; margin:8px 0 7px; display:flex; align-items:center; gap:8px; }
+.act-block .cell h3 .freq{ font-family:'Space Mono',monospace; font-size:10px; font-weight:400; color:#fff; padding:2px 8px; border-radius:20px; }
+.act-block .cell p{ font-size:13.5px; color:var(--ink-2); margin:0; }
+
+/* 1ヶ月の流れ — タイムライン */
+.flow{ border:2px solid var(--ink); border-radius:18px; background:#fff; padding:30px 28px; }
+.flow .line{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative; }
+.flow .step{ position:relative; padding:0 14px; }
+.flow .step::before{ content:""; position:absolute; top:18px; left:-50%; right:50%; height:2px; background:var(--line); z-index:0; }
+.flow .step:first-child::before{ display:none; }
+.flow .dot{ width:38px; height:38px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:15px; position:relative; z-index:1; border:2px solid var(--ink); }
+.flow .step h4{ font-family:var(--font-round); font-weight:900; font-size:15px; margin:14px 0 5px; }
+.flow .step p{ font-size:13px; color:var(--ink-2); margin:0; }
+.flow .step .w{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); }
+
+/* ラジオ feature */
+.radio{ display:grid; grid-template-columns:1fr 1.1fr; gap:28px; align-items:stretch; }
+.radio .visual{ border:2px solid var(--ink); border-radius:18px; background:#E0A500; padding:28px; color:var(--ink); position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; min-height:230px; }
+.radio .visual .wave{ display:flex; align-items:flex-end; gap:5px; height:60px; }
+.radio .visual .wave i{ width:7px; background:var(--ink); border-radius:4px; animation:eq 1.1s ease-in-out infinite; }
+@keyframes eq{ 0%,100%{ height:18% } 50%{ height:100% } }
+.radio .visual .k{ font-family:'Space Mono',monospace; font-size:12px; }
+.radio .visual h3{ font-family:var(--font-round); font-weight:900; font-size:26px; margin:10px 0 0; }
+.radio .info{ border:2px solid var(--ink); border-radius:18px; background:#fff; padding:26px; }
+.radio .info .ep{ display:flex; gap:12px; padding:13px 0; border-bottom:1.5px dashed var(--line); align-items:center; }
+.radio .info .ep:last-child{ border-bottom:none; }
+.radio .info .ep .num{ font-family:'Space Mono',monospace; font-size:12px; color:#fff; background:#E0A500; padding:3px 9px; border-radius:7px; flex-shrink:0; }
+.radio .info .ep h4{ font-family:var(--font-round); font-weight:700; font-size:14.5px; margin:0; }
+.radio .info .ep .t{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); margin-left:auto; flex-shrink:0; }
+
+section.blk{ padding:34px 0; }
+
+@media (max-width:920px){
+  .intro-grid, .act-block .body, .radio{ grid-template-columns:1fr; }
+  .act-block .cell{ border-right:none !important; }
+  .flow .line{ grid-template-columns:1fr 1fr; gap:24px 0; }
+  .flow .step::before{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav class="bar"><div class="wrap">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="">ALL-IN GAS</a>
+  <div class="links">
+    <a href="articles.html">記事</a>
+    <a href="activities.html" class="on">活動</a>
+    <a href="members.html">メンバー</a>
+    <span class="status"><span class="dot"></span>メンバー募集中</span>
+    <a href="join.html" class="join">参加する</a>
+  </div>
+</div></nav>
+
+<!-- PAGE HERO -->
+<header class="page-hero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Top</a> <span>/</span> <span>activities</span></div>
+  <div class="row">
+    <span class="tick">02</span>
+    <h1>どんな<span class="hl">活動</span>をしてる？</h1>
+    <span class="en">// activities</span>
+  </div>
+  <p class="lead">ALL-IN GAS は「学ぶ・試す・発信する・交流する」を、オンラインとオフラインの両方でゆるく回しています。ガチすぎず、でも手は動かす。気になるものから、ひとつだけ覗いてみてください。</p>
+  <p class="hand">↑ 全部やらなくてOK。つまみ食い歓迎です。</p>
+  <div class="intro-grid">
+    <div class="icard"><div class="k mono">// online</div><div class="n" style="color:var(--g-blue)">月1</div><div class="l">オンライン講座 & 勉強会</div></div>
+    <div class="icard"><div class="k mono">// teams</div><div class="n" style="color:var(--g-red)">6</div><div class="l">テーマ別 分科会</div></div>
+    <div class="icard"><div class="k mono">// radio</div><div class="n" style="color:#E0A500">📻</div><div class="l">ゆるテックラジオ 配信中</div></div>
+  </div>
+</div></header>
+
+<!-- オンライン -->
+<section class="blk"><div class="wrap">
+  <div class="act-block">
+    <div class="head" style="background:var(--g-blue)"><span class="badge mono">online</span><h2>オンライン</h2><span class="tag">どこからでも参加</span></div>
+    <div class="body">
+      <div class="cell"><div class="no mono">act.01</div><h3>月1回の講座 & 勉強会 <span class="freq" style="background:var(--g-blue)">monthly</span></h3><p>GAS・GWS・AI の実践講座、ゲストセミナー、AIハンズオン。参加できなくてもアーカイブで学べます。</p></div>
+      <div class="cell"><div class="no mono">act.02</div><h3>ゆるテックラジオ <span class="freq" style="background:#E0A500">weekly</span></h3><p>メンバーの試行錯誤やテックの話をゆるーく配信。通勤・家事のおともにどうぞ。</p></div>
+      <div class="cell"><div class="no mono">act.03</div><h3>日々の情報共有 <span class="freq" style="background:var(--g-green)">daily</span></h3><p>「これ便利だった」「ここで詰まった」を気軽にシェア。小さな発見が集まる場所。</p></div>
+    </div>
+  </div>
+  <div class="act-block">
+    <div class="head" style="background:var(--g-green)"><span class="badge mono">offline</span><h2>オフライン</h2><span class="tag">佐賀で、リアルに</span></div>
+    <div class="body">
+      <div class="cell"><div class="no mono">act.04</div><h3>佐賀での交流会</h3><p>不定期のオフライン会・もくもく会。画面の向こうの人と、実際に会って話す時間。</p></div>
+      <div class="cell"><div class="no mono">act.05</div><h3>ハンズオン会</h3><p>みんなで手を動かして作る会。詰まってもその場で聞ける安心感があります。</p></div>
+      <div class="cell"><div class="no mono">act.06</div><h3>地域連携</h3><p>地域の事業者・団体との取り組み。ゆるテックを地域の課題解決に活かします。</p></div>
+    </div>
+  </div>
+  <div class="act-block">
+    <div class="head" style="background:var(--g-red)"><span class="badge mono">teams</span><h2>分科会（部活動）</h2><span class="tag">手を動かす人の集まり</span></div>
+    <div class="body">
+      <div class="cell"><div class="no mono">act.07</div><h3>LINE×GAS / AI活用 / GWS</h3><p>テーマごとに自主的に学び合う部活動。実装まで一緒にやります。</p></div>
+      <div class="cell"><div class="no mono">act.08</div><h3>デザイン部</h3><p>バナー・資料・サイト。AIやデザインを“作りながら”覚えるチームです。</p></div>
+      <div class="cell"><div class="no mono">act.09</div><h3>イベントPJ / 実験室</h3><p>企画を立てて動かす。「これやってみた！」が生まれる発生源。</p></div>
+    </div>
+  </div>
+</div></section>
+
+<hr class="rule">
+
+<!-- 1ヶ月の流れ -->
+<section class="blk"><div class="wrap">
+  <div class="sec-head"><span class="tick">flow</span><h2>ある1ヶ月の流れ</h2><span class="en">// monthly_cycle</span></div>
+  <div class="flow">
+    <div class="line">
+      <div class="step"><div class="dot" style="background:var(--g-blue)">01</div><div class="w mono">week 1</div><h4>講座でインプット</h4><p>その月のテーマを学ぶ。アーカイブ視聴もOK。</p></div>
+      <div class="step"><div class="dot" style="background:var(--g-green)">02</div><div class="w mono">week 2-3</div><h4>分科会で手を動かす</h4><p>学んだことを、自分の仕事や暮らしで試す。</p></div>
+      <div class="step"><div class="dot" style="background:#E0A500">03</div><div class="w mono">anytime</div><h4>ラジオ & 共有</h4><p>途中経過や失敗も、ゆるく発信・共有する。</p></div>
+      <div class="step"><div class="dot" style="background:var(--g-red)">04</div><div class="w mono">week 4</div><h4>記事でアウトプット</h4><p>「やってみた」を記事に。次の誰かのヒントに。</p></div>
+    </div>
+  </div>
+</div></section>
+
+<hr class="rule">
+
+<!-- ラジオ -->
+<section class="blk"><div class="wrap">
+  <div class="sec-head"><span class="tick">radio</span><h2>ゆるテックラジオ</h2><span class="en">// yuru_tech_radio</span></div>
+  <div class="radio">
+    <div class="visual">
+      <div class="k mono">// on air</div>
+      <div class="wave"><i style="height:30%;animation-delay:0s"></i><i style="height:70%;animation-delay:.1s"></i><i style="height:45%;animation-delay:.2s"></i><i style="height:90%;animation-delay:.3s"></i><i style="height:55%;animation-delay:.15s"></i><i style="height:80%;animation-delay:.25s"></i><i style="height:35%;animation-delay:.05s"></i><i style="height:65%;animation-delay:.35s"></i><i style="height:50%;animation-delay:.2s"></i></div>
+      <div><h3>聞き流しで、ゆるく学ぶ。</h3><p style="margin:8px 0 0;font-size:14px">家事や移動のおともに。テックの話を肩肘張らずに。</p></div>
+    </div>
+    <div class="info">
+      <div class="ep"><span class="num mono">#12</span><h4>非エンジニアがAIと付き合うコツ</h4><span class="t mono">28:14</span></div>
+      <div class="ep"><span class="num mono">#11</span><h4>GASで失敗した話、しよう</h4><span class="t mono">31:02</span></div>
+      <div class="ep"><span class="num mono">#10</span><h4>デザイン部、はじめての納品</h4><span class="t mono">25:47</span></div>
+      <div class="ep"><span class="num mono">#09</span><h4>佐賀のローカル×テックの可能性</h4><span class="t mono">33:20</span></div>
+      <div style="margin-top:16px"><a href="#" class="btn btn-y">配信を聴く →</a></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta-band"><div class="wrap">
+  <div class="box">
+    <div class="corner"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+    <div>
+      <div class="hand">＼ 気になる活動があれば ／</div>
+      <h2>まずは、ひとつ覗いてみませんか？</h2>
+      <p>全部に参加しなくて大丈夫。あなたの「やってみたい」に合う活動から、ゆるく始められます。</p>
+    </div>
+    <div class="actions">
+      <a href="join.html" class="btn btn-y">参加を申し込む →</a>
+      <a href="join.html" class="btn btn-ghost">お問い合わせ</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="logo"><img src="assets/logo.png" alt="">ALL-IN GAS</div>
+      <div class="desc">佐賀発・非エンジニアのための「ゆるテック」実践型コミュニティ。GAS・Google Workspace・AI を、ゆるく実践しながら学んでいます。</div>
+    </div>
+    <div><h5>Sitemap</h5><a href="index.html">Top</a><a href="articles.html">ゆるテック記事</a><a href="activities.html">活動紹介</a><a href="members.html">メンバー</a></div>
+    <div><h5>Join</h5><a href="join.html">参加申し込み</a><a href="join.html">お問い合わせ</a><a href="join.html">よくある質問</a></div>
+  </div>
+  <div class="copy">© 2026 ALL-IN GAS — YURU-TECH MEDIA ・ made_in_saga</div>
+</div></footer>
+
+</body>
+</html>

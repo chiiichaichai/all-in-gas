@@ -1,0 +1,45 @@
+/* ============================================================
+   ALL-IN GAS — 共通デザイントークン
+   「ゆるテック」: やさしい・明るい・ゆるい・でも信頼感
+   Googleカラー(赤・青・黄・緑) + 温かみのある手書きアクセント
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Yomogi&family=Klee+One:wght@400;600&family=Outfit:wght@500;600;700;800&display=swap');
+
+:root {
+  /* --- Googleカラー --- */
+  --g-red:    #EA4335;
+  --g-blue:   #4285F4;
+  --g-yellow: #FBBC04;
+  --g-green:  #34A853;
+
+  /* やわらかめの派生（背景ブロック用） */
+  --g-red-soft:    #FBE3E0;
+  --g-blue-soft:   #E1ECFE;
+  --g-yellow-soft: #FEF3D2;
+  --g-green-soft:  #DCF0E2;
+
+  /* --- インク & ペーパー --- */
+  --ink:        #2B2D31;   /* ロゴ中心の濃いチャコール */
+  --ink-2:      #55585F;   /* サブテキスト */
+  --ink-3:      #8A8D94;   /* 補助 */
+  --paper:      #FBF8F1;   /* 温かいクリーム地 */
+  --paper-2:    #F3EEE2;   /* 少し沈んだ紙 */
+  --paper-card: #FFFFFF;
+  --line:       #E6DFCF;   /* 紙に馴染む罫線 */
+  --line-ink:   #2B2D31;
+
+  /* --- フォント --- */
+  --font-round: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', sans-serif; /* 見出し・ブランド（丸ゴシック） */
+  --font-body:  'Zen Kaku Gothic New', 'Hiragino Sans', sans-serif;          /* 本文 */
+  --font-hand:  'Yomogi', 'Klee One', cursive;                               /* 手書きアクセント */
+  --font-latin: 'Outfit', sans-serif;                                        /* 英字ディスプレイ */
+
+  --radius:   18px;
+  --radius-lg: 28px;
+  --shadow-sticker: 0 6px 0 rgba(43,45,49,.10), 0 14px 28px -12px rgba(43,45,49,.30);
+}
+
+* { box-sizing: border-box; }
+
+::selection { background: var(--g-yellow); color: var(--ink); }

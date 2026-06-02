@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>メンバー紹介 ｜ ALL-IN GAS</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* ---- メンバー紹介ページ固有 ---- */
+.mgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.profile{ border:2px solid var(--ink); border-radius:18px; background:#fff; overflow:hidden; transition:.16s; display:flex; flex-direction:column; }
+.profile:hover{ transform:translate(-3px,-3px); box-shadow:6px 6px 0 var(--ink); }
+.profile .topbar2{ height:8px; display:flex; }
+.profile .topbar2 i{ flex:1; }
+.profile .head{ display:flex; gap:16px; align-items:center; padding:22px 22px 14px; }
+.profile .av{ width:66px; height:66px; border-radius:16px; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:28px; border:2px solid var(--ink); flex-shrink:0; }
+.profile .name{ font-family:var(--font-round); font-weight:900; font-size:20px; margin:0; }
+.profile .handle{ font-family:'Space Mono',monospace; font-size:12px; color:var(--ink-3); }
+.profile .role{ font-family:var(--font-hand); font-size:14px; color:var(--g-red); margin-top:3px; }
+.profile .bio{ padding:0 22px; font-size:13.5px; color:var(--ink-2); margin:0 0 14px; }
+.profile .tags{ display:flex; gap:6px; flex-wrap:wrap; padding:0 22px 16px; }
+.profile .tags span{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-3); border:1px solid var(--line); border-radius:20px; padding:3px 9px; }
+.profile .foot{ margin-top:auto; border-top:1.5px dashed var(--line); padding:14px 22px; display:flex; align-items:center; gap:14px; font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-2); }
+.profile .foot b{ font-family:var(--font-round); font-size:15px; }
+.profile .foot .sep{ width:1px; height:24px; background:var(--line); }
+.profile .foot a{ margin-left:auto; font-family:var(--font-round); font-weight:700; font-size:12.5px; color:var(--g-blue); }
+
+/* 数値帯 */
+.statband{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:6px 0 8px; }
+.scard{ border:2px solid var(--ink); border-radius:14px; background:#fff; padding:18px 20px; }
+.scard .n{ font-family:var(--font-round); font-weight:900; font-size:30px; line-height:1; }
+.scard .l{ font-size:12.5px; color:var(--ink-2); margin-top:6px; }
+.scard .k{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--ink-3); }
+
+/* 参加までの3ステップ（メンバーになるには） */
+.become{ border:2px solid var(--ink); border-radius:18px; background:var(--ink); color:#fff; padding:34px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; position:relative; overflow:hidden; }
+.become .corner{ position:absolute; top:0; right:0; display:flex; }
+.become .corner i{ width:26px; height:26px; }
+.become .st{ }
+.become .st .num{ width:40px; height:40px; border-radius:11px; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:16px; }
+.become .st h4{ font-family:var(--font-round); font-weight:900; font-size:17px; margin:14px 0 6px; }
+.become .st p{ font-size:13.5px; color:#D9DBE0; margin:0; }
+
+@media (max-width:920px){ .mgrid{ grid-template-columns:1fr 1fr; } .statband{ grid-template-columns:1fr 1fr; } .become{ grid-template-columns:1fr; } }
+@media (max-width:620px){ .mgrid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="bar"><div class="wrap">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="">ALL-IN GAS</a>
+  <div class="links">
+    <a href="articles.html">記事</a>
+    <a href="activities.html">活動</a>
+    <a href="members.html" class="on">メンバー</a>
+    <span class="status"><span class="dot"></span>メンバー募集中</span>
+    <a href="join.html" class="join">参加する</a>
+  </div>
+</div></nav>
+
+<!-- PAGE HERO -->
+<header class="page-hero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Top</a> <span>/</span> <span>members</span></div>
+  <div class="row">
+    <span class="tick">04</span>
+    <h1>書いている<span class="hl">人たち</span></h1>
+    <span class="en">// members</span>
+  </div>
+  <p class="lead">肩書きはいろいろ、でも共通点は「まず試してみる人」。それぞれが自分のペースで、テックを暮らしや仕事に混ぜています。気になる人の記事も、ここから読めます。</p>
+  <p class="hand">↑ みんな、はじめは未経験からでした。</p>
+  <div class="statband">
+    <div class="scard"><div class="k mono">// members</div><div class="n" style="color:var(--g-blue)">24</div><div class="l">参加メンバー</div></div>
+    <div class="scard"><div class="k mono">// articles</div><div class="n" style="color:var(--g-green)">86</div><div class="l">公開記事</div></div>
+    <div class="scard"><div class="k mono">// teams</div><div class="n" style="color:var(--g-red)">6</div><div class="l">分科会</div></div>
+    <div class="scard"><div class="k mono">// area</div><div class="n" style="color:#E0A500">佐賀</div><div class="l">拠点・つながる地域</div></div>
+  </div>
+</div></header>
+
+<!-- MEMBERS -->
+<section style="padding:18px 0"><div class="wrap">
+  <div class="sec-head"><span class="tick">core</span><h2>コアメンバー</h2><span class="en">// core_members</span></div>
+  <div class="mgrid">
+
+    <div class="profile">
+      <div class="topbar2"><i style="background:var(--g-red)"></i><i style="background:var(--ink)"></i></div>
+      <div class="head"><div class="av" style="background:var(--g-red)">ヤ</div><div><h3 class="name">やまだ</h3><div class="handle mono">@yamada</div><div class="role">GAS自動化おじさん</div></div></div>
+      <p class="bio">気づけば身のまわりを自動化している。日報・議事録・通知まわりが得意。「まず動かす、あとで直す」が信条。</p>
+      <div class="tags"><span>#GAS</span><span>#日報</span><span>#実験室</span><span>#AI</span></div>
+      <div class="foot"><div><b>14</b> 記事</div><div class="sep"></div><div>実験室部長</div><a href="articles.html">記事を見る →</a></div>
+    </div>
+
+    <div class="profile">
+      <div class="topbar2"><i style="background:var(--g-blue)"></i><i style="background:var(--ink)"></i></div>
+      <div class="head"><div class="av" style="background:var(--g-blue)">サ</div><div><h3 class="name">さとう</h3><div class="handle mono">@sato</div><div class="role">デザイン部・部長</div></div></div>
+      <p class="bio">バナー・資料・サイトを「作りながら覚える」派。AIとデザインの相性を日々検証中。納品の喜びを布教している。</p>
+      <div class="tags"><span>#design</span><span>#バナー</span><span>#AI</span></div>
+      <div class="foot"><div><b>21</b> 記事</div><div class="sep"></div><div>デザイン部</div><a href="articles.html">記事を見る →</a></div>
+    </div>
+
+    <div class="profile">
+      <div class="topbar2"><i style="background:#E0A500"></i><i style="background:var(--ink)"></i></div>
+      <div class="head"><div class="av" style="background:#E0A500">タ</div><div><h3 class="name">たなか</h3><div class="handle mono">@tanaka</div><div class="role">ライフハック探検家</div></div></div>
+      <p class="bio">「コードなんて無理」から半年で業務を3つ自動化。非エンジニア目線のつまずきポイント解説に定評あり。</p>
+      <div class="tags"><span>#GWS</span><span>#業務改善</span><span>#GAS</span></div>
+      <div class="foot"><div><b>18</b> 記事</div><div class="sep"></div><div>GWS分科会</div><a href="articles.html">記事を見る →</a></div>
+    </div>
+
+    <div class="profile">
+      <div class="topbar2"><i style="background:var(--g-green)"></i><i style="background:var(--ink)"></i></div>
+      <div class="head"><div class="av" style="background:var(--g-green)">ミ</div><div><h3 class="name">みやけ</h3><div class="handle mono">@miyake</div><div class="role">ラジオ担当</div></div></div>
+      <p class="bio">ゆるテックラジオのパーソナリティ。音声配信とLINE連携の実験が好き。喋りながら考えるタイプ。</p>
+      <div class="tags"><span>#radio</span><span>#voice</span><span>#LINE</span></div>
+      <div class="foot"><div><b>12</b> 記事</div><div class="sep"></div><div>ラジオ</div><a href="articles.html">記事を見る →</a></div>
+    </div>
+
+    <div class="profile">
+      <div class="topbar2"><i style="background:var(--g-blue)"></i><i style="background:var(--ink)"></i></div>
+      <div class="head"><div class="av" style="background:var(--g-blue)">イ</div><div><h3 class="name">いのうえ</h3><div class="handle mono">@inoue</div><div class="role">イベントPJ・幹事</div></div></div>
+      <p class="bio">企画して、人を集めて、動かす人。もくもく会・交流会の仕掛け人。「とりあえずやってみよう」が口ぐせ。</p>
+      <div class="tags"><span>#event</span><span>#PJ</span><span>#地域</span></div>
+      <div class="foot"><div><b>9</b> 記事</div><div class="sep"></div><div>イベントPJ</div><a href="articles.html">記事を見る →</a></div>
+    </div>
+
+    <div class="profile">
+      <div class="topbar2"><i style="background:var(--g-red)"></i><i style="background:var(--ink)"></i></div>
+      <div class="head"><div class="av" style="background:var(--g-red)">ク</div><div><h3 class="name">くどう</h3><div class="handle mono">@kudo</div><div class="role">LINE×GAS分科会</div></div></div>
+      <p class="bio">暮らしの「うっかり」をテックで減らすのが趣味。天気・ゴミ出し・リマインドなど、小さな自動化の達人。</p>
+      <div class="tags"><span>#LINE</span><span>#GAS</span><span>#暮らし</span></div>
+      <div class="foot"><div><b>12</b> 記事</div><div class="sep"></div><div>LINE分科会</div><a href="articles.html">記事を見る →</a></div>
+    </div>
+
+  </div>
+</div></section>
+
+<hr class="rule">
+
+<!-- メンバーになるには -->
+<section style="padding:34px 0"><div class="wrap">
+  <div class="sec-head"><span class="tick">join</span><h2>メンバーになるには</h2><span class="en">// how_to_join</span></div>
+  <div class="become">
+    <div class="corner"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+    <div class="st"><div class="num">01</div><h4>申し込む</h4><p>フォームから参加申し込み。「やってみたい」気持ちだけでOKです。</p></div>
+    <div class="st"><div class="num">02</div><h4>のぞいてみる</h4><p>気になる活動・分科会に、まずは見学から。無理に発言しなくて大丈夫。</p></div>
+    <div class="st"><div class="num">03</div><h4>試して、書く</h4><p>小さく試して、よかったら記事に。あなたの実験が、次の誰かのヒントに。</p></div>
+  </div>
+  <div style="text-align:center;margin-top:24px"><a href="join.html" class="btn btn-green">参加を申し込む →</a></div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta-band"><div class="wrap">
+  <div class="box">
+    <div class="corner"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+    <div>
+      <div class="hand">＼ あなたの肩書きも、ここに ／</div>
+      <h2>一緒に、ゆるく試す仲間に。</h2>
+      <p>未経験でも、専門職じゃなくても大丈夫。みんな、はじめはひとつの「やってみた」から始まりました。</p>
+    </div>
+    <div class="actions">
+      <a href="join.html" class="btn btn-y">仲間になる →</a>
+      <a href="activities.html" class="btn btn-ghost">活動を見る</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="logo"><img src="assets/logo.png" alt="">ALL-IN GAS</div>
+      <div class="desc">佐賀発・非エンジニアのための「ゆるテック」実践型コミュニティ。GAS・Google Workspace・AI を、ゆるく実践しながら学んでいます。</div>
+    </div>
+    <div><h5>Sitemap</h5><a href="index.html">Top</a><a href="articles.html">ゆるテック記事</a><a href="activities.html">活動紹介</a><a href="members.html">メンバー</a></div>
+    <div><h5>Join</h5><a href="join.html">参加申し込み</a><a href="join.html">お問い合わせ</a><a href="join.html">よくある質問</a></div>
+  </div>
+  <div class="copy">© 2026 ALL-IN GAS — YURU-TECH MEDIA ・ made_in_saga</div>
+</div></footer>
+
+</body>
+</html>

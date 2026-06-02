@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゆるテック記事 ｜ ALL-IN GAS</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* ---- 記事一覧ページ固有 ---- */
+.toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:6px 0 4px; }
+.filter{ display:flex; gap:7px; flex-wrap:wrap; }
+.fbtn{ font-family:var(--font-round); font-weight:700; font-size:13.5px; border:1.5px solid var(--ink); background:#fff; color:var(--ink); padding:7px 14px; border-radius:30px; cursor:pointer; transition:.15s; display:inline-flex; align-items:center; gap:7px; }
+.fbtn i{ width:9px; height:9px; border-radius:2px; }
+.fbtn:hover{ background:#EFEAE0; }
+.fbtn.on{ background:var(--ink); color:#fff; }
+.fbtn.on i{ box-shadow:0 0 0 2px rgba(255,255,255,.4); }
+.count{ margin-left:auto; font-family:'Space Mono',monospace; font-size:12px; color:var(--ink-3); }
+
+/* featured */
+.feat{ border:2px solid var(--ink); border-radius:18px; background:#fff; overflow:hidden; display:grid; grid-template-columns:1.2fr 1fr; box-shadow:6px 6px 0 var(--ink); margin-bottom:26px; }
+.feat .ph{ aspect-ratio:auto; min-height:280px; }
+.feat .body{ padding:30px 32px; display:flex; flex-direction:column; }
+.feat .pin{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); }
+.feat .cat{ font-family:var(--font-round); font-weight:700; font-size:12.5px; padding:4px 12px; border-radius:30px; color:#fff; align-self:flex-start; margin:10px 0; }
+.feat h2{ font-family:var(--font-round); font-weight:900; font-size:clamp(22px,2.6vw,30px); line-height:1.4; margin:0 0 12px; }
+.feat p{ font-size:14.5px; color:var(--ink-2); margin:0 0 18px; }
+.feat .meta{ font-family:'Space Mono',monospace; font-size:12.5px; color:var(--ink-2); margin-top:auto; display:flex; align-items:center; gap:9px; }
+.feat .av{ width:28px; height:28px; border-radius:8px; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:13px; }
+
+/* grid */
+.art-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.art{ border:2px solid var(--ink); border-radius:16px; background:#fff; overflow:hidden; display:flex; flex-direction:column; transition:.16s; }
+.art:hover{ transform:translate(-3px,-3px); box-shadow:5px 5px 0 var(--ink); }
+.art .ph{ aspect-ratio:16/9; }
+.art .body{ padding:16px 18px 18px; display:flex; flex-direction:column; flex:1; }
+.art .cat{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:6px; }
+.art .cat i{ width:9px; height:9px; border-radius:2px; }
+.art h3{ font-family:var(--font-round); font-weight:900; font-size:16px; line-height:1.45; margin:10px 0; }
+.art .ex{ font-size:13px; color:var(--ink-2); margin:0 0 12px; }
+.art .meta{ font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-2); margin-top:auto; display:flex; align-items:center; gap:7px; }
+.art .av{ width:22px; height:22px; border-radius:6px; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:11px; }
+.art .tools{ display:flex; gap:5px; margin-top:10px; flex-wrap:wrap; }
+.art .tools span{ font-family:'Space Mono',monospace; font-size:10px; color:var(--ink-3); border:1px solid var(--line); border-radius:20px; padding:2px 8px; }
+.art.hide{ display:none; }
+
+.pager{ display:flex; justify-content:center; gap:8px; margin-top:34px; }
+.pager a{ font-family:'Space Mono',monospace; font-size:13px; border:1.5px solid var(--ink); background:#fff; width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; transition:.15s; }
+.pager a:hover{ background:#EFEAE0; }
+.pager a.on{ background:var(--ink); color:#fff; }
+
+@media (max-width:920px){ .feat{ grid-template-columns:1fr; } .feat .ph{ min-height:200px; } .art-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:620px){ .art-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="bar"><div class="wrap">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="">ALL-IN GAS</a>
+  <div class="links">
+    <a href="articles.html" class="on">記事</a>
+    <a href="activities.html">活動</a>
+    <a href="members.html">メンバー</a>
+    <span class="status"><span class="dot"></span>メンバー募集中</span>
+    <a href="join.html" class="join">参加する</a>
+  </div>
+</div></nav>
+
+<!-- PAGE HERO -->
+<header class="page-hero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Top</a> <span>/</span> <span>articles</span></div>
+  <div class="row">
+    <span class="tick">03</span>
+    <h1>ゆるテック<span class="hl">記事</span></h1>
+    <span class="en">// articles_and_logs</span>
+  </div>
+  <p class="lead">メンバーが書いた「やってみた」ログ。成功も失敗も、途中経過も。使ったツールや手順つきなので、読んだあとに自分でも試せます。</p>
+  <div class="toolbar">
+    <div class="filter" id="filter">
+      <button class="fbtn on" data-cat="all">すべて</button>
+      <button class="fbtn" data-cat="lab"><i style="background:var(--g-green)"></i>ゆるテック実験室</button>
+      <button class="fbtn" data-cat="report"><i style="background:var(--g-red)"></i>イベント・活動レポ</button>
+      <button class="fbtn" data-cat="hack"><i style="background:var(--g-blue)"></i>ライフハック</button>
+      <button class="fbtn" data-cat="news"><i style="background:#E0A500"></i>お知らせ</button>
+    </div>
+    <span class="count" id="count">12 articles</span>
+  </div>
+</div></header>
+
+<!-- FEATURED -->
+<section style="padding:8px 0 12px"><div class="wrap">
+  <div class="feat" data-cat="lab">
+    <div class="ph"><span>アイキャッチ</span></div>
+    <div class="body">
+      <div class="pin mono">// pinned ・ 注目の記事</div>
+      <span class="cat" style="background:var(--g-green)">ゆるテック実験室</span>
+      <h2>GASで日報を自動化してみた（途中経過つき）</h2>
+      <p>「毎日同じことを書いてる日報、自動化できないかな？」から始めた小さな実験。詰まったところ、AIに聞いたこと、まだ解決してないことまで、全部ログに残しました。</p>
+      <div class="tools" style="margin-bottom:16px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="mono" style="font-size:10.5px;border:1px solid var(--line);border-radius:20px;padding:3px 9px;color:var(--ink-3)">GAS</span>
+        <span class="mono" style="font-size:10.5px;border:1px solid var(--line);border-radius:20px;padding:3px 9px;color:var(--ink-3)">Spreadsheet</span>
+        <span class="mono" style="font-size:10.5px;border:1px solid var(--line);border-radius:20px;padding:3px 9px;color:var(--ink-3)">AI</span>
+      </div>
+      <div class="meta"><span class="av" style="background:var(--g-red)">ヤ</span>@yamada ・ 2026.05.18 ・ 読了 6分</div>
+      <div style="margin-top:18px"><a href="article.html" class="btn btn-green">続きを読む →</a></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- GRID -->
+<section style="padding:4px 0"><div class="wrap">
+  <div class="art-grid" id="grid">
+    <article class="art" data-cat="report"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-red)"><i style="background:var(--g-red)"></i>イベント・活動レポ</span><h3>デザイン部で作ったバナーの振り返り</h3><p class="ex">はじめての「納品」。みんなで作って、フィードバックして、直して。その過程を振り返ります。</p><div class="tools"><span>Design</span><span>AI</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-blue)">サ</span>@sato ・ 05.10</div></div></article>
+
+    <article class="art" data-cat="hack"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-blue)"><i style="background:var(--g-blue)"></i>ライフハック</span><h3>非エンジニアがAIとGASで仕事を変えるまで</h3><p class="ex">「コードなんて無理」と思っていた私が、半年で業務を3つ自動化した話。</p><div class="tools"><span>GAS</span><span>AI</span><span>GWS</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:#E0A500">タ</span>@tanaka ・ 05.02</div></div></article>
+
+    <article class="art" data-cat="lab"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-green)"><i style="background:var(--g-green)"></i>ゆるテック実験室</span><h3>LINEに毎朝、天気とゴミ出しを通知する</h3><p class="ex">GASとLINE Messaging APIで、暮らしのうっかりを減らす実験。</p><div class="tools"><span>GAS</span><span>LINE</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-green)">ミ</span>@miyake ・ 04.27</div></div></article>
+
+    <article class="art" data-cat="hack"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-blue)"><i style="background:var(--g-blue)"></i>ライフハック</span><h3>議事録、AIに要約させたら会議が変わった</h3><p class="ex">録音 → 文字起こし → AI要約 → 共有。この流れを定着させるまで。</p><div class="tools"><span>AI</span><span>GWS</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-red)">ヤ</span>@yamada ・ 04.20</div></div></article>
+
+    <article class="art" data-cat="report"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-red)"><i style="background:var(--g-red)"></i>イベント・活動レポ</span><h3>佐賀もくもく会、はじめて開催しました</h3><p class="ex">画面の向こうの人と、実際に会って手を動かす。リアルの良さを再発見。</p><div class="tools"><span>Event</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-blue)">サ</span>@sato ・ 04.14</div></div></article>
+
+    <article class="art" data-cat="lab"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-green)"><i style="background:var(--g-green)"></i>ゆるテック実験室</span><h3>スプレッドシートを簡易データベースにする</h3><p class="ex">小さなチームなら、これで十分。やりすぎないテックの話。</p><div class="tools"><span>GWS</span><span>GAS</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:#E0A500">タ</span>@tanaka ・ 04.08</div></div></article>
+
+    <article class="art" data-cat="news"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:#E0A500"><i style="background:#E0A500"></i>お知らせ</span><h3>5月の講座テーマは「AIと業務改善」です</h3><p class="ex">ゲストをお招きして、実例ベースで学びます。アーカイブあり。</p><div class="tools"><span>News</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-green)">ミ</span>@miyake ・ 04.30</div></div></article>
+
+    <article class="art" data-cat="hack"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-blue)"><i style="background:var(--g-blue)"></i>ライフハック</span><h3>フォーム回答を自動でSlackに流す</h3><p class="ex">問い合わせの取りこぼしゼロへ。ノーコード＋ちょいGAS。</p><div class="tools"><span>GAS</span><span>Form</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-red)">ヤ</span>@yamada ・ 03.29</div></div></article>
+
+    <article class="art" data-cat="lab"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-green)"><i style="background:var(--g-green)"></i>ゆるテック実験室</span><h3>AIにバナー文言を10案出させてみた</h3><p class="ex">デザイン部の実験ログ。プロンプトと採用理由も公開。</p><div class="tools"><span>AI</span><span>Design</span></div><div class="meta" style="margin-top:10px"><span class="av" style="background:var(--g-blue)">サ</span>@sato ・ 03.22</div></div></article>
+  </div>
+
+  <div class="pager">
+    <a class="on">1</a><a>2</a><a>→</a>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta-band" style="margin-top:40px"><div class="wrap">
+  <div class="box">
+    <div class="corner"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+    <div>
+      <div class="hand">＼ あなたの「やってみた」も ／</div>
+      <h2>記事、書いてみませんか？</h2>
+      <p>成功談じゃなくていい。途中経過も、失敗ログも、誰かのヒントになります。メンバーになると、あなたの実験も記事にできます。</p>
+    </div>
+    <div class="actions">
+      <a href="join.html" class="btn btn-y">仲間になる →</a>
+      <a href="members.html" class="btn btn-ghost">書いている人を見る</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="logo"><img src="assets/logo.png" alt="">ALL-IN GAS</div>
+      <div class="desc">佐賀発・非エンジニアのための「ゆるテック」実践型コミュニティ。GAS・Google Workspace・AI を、ゆるく実践しながら学んでいます。</div>
+    </div>
+    <div><h5>Sitemap</h5><a href="index.html">Top</a><a href="articles.html">ゆるテック記事</a><a href="activities.html">活動紹介</a><a href="members.html">メンバー</a></div>
+    <div><h5>Join</h5><a href="join.html">参加申し込み</a><a href="join.html">お問い合わせ</a><a href="join.html">よくある質問</a></div>
+  </div>
+  <div class="copy">© 2026 ALL-IN GAS — YURU-TECH MEDIA ・ made_in_saga</div>
+</div></footer>
+
+<script>
+const filter=document.getElementById('filter'), grid=document.getElementById('grid'), count=document.getElementById('count');
+const feat=document.querySelector('.feat');
+// カードクリックで記事詳細へ
+feat.style.cursor='pointer';
+feat.addEventListener('click',e=>{ if(!e.target.closest('a')) location.href='article.html'; });
+[...grid.children].forEach(a=>{ a.style.cursor='pointer'; a.addEventListener('click',()=>location.href='article.html'); });
+filter.addEventListener('click',e=>{
+  const b=e.target.closest('.fbtn'); if(!b) return;
+  [...filter.children].forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  const cat=b.dataset.cat;
+  let shown=0;
+  [...grid.children].forEach(a=>{
+    const ok = cat==='all' || a.dataset.cat===cat;
+    a.classList.toggle('hide', !ok); if(ok) shown++;
+  });
+  // featured: 注目記事はlab。allかlab以外のとき扱いを調整
+  if(feat){ const fok = cat==='all' || feat.dataset.cat===cat; feat.style.display = fok ? '' : 'none'; if(fok && cat!=='all') shown++; else if(cat==='all') shown++; }
+  count.textContent = (cat==='all'? '12' : shown) + ' articles';
+});
+</script>
+</body>
+</html>

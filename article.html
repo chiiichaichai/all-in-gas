@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GASで日報を自動化してみた（途中経過つき） ｜ ALL-IN GAS</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* ---- 記事詳細ページ固有 ---- */
+.art-layout{ display:grid; grid-template-columns:minmax(0,1fr) 268px; gap:40px; align-items:start; }
+
+/* 記事ヘッダ */
+.art-head .cat{ font-family:var(--font-round); font-weight:700; font-size:12.5px; padding:5px 13px; border-radius:30px; color:#fff; display:inline-flex; align-items:center; gap:7px; }
+.art-head h1{ font-family:var(--font-round); font-weight:900; font-size:clamp(28px,3.8vw,44px); line-height:1.32; margin:18px 0 16px; letter-spacing:.005em; }
+.art-head .byline{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.art-head .av{ width:42px; height:42px; border-radius:11px; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:18px; border:2px solid var(--ink); }
+.art-head .who b{ font-family:var(--font-round); font-weight:900; font-size:15px; }
+.art-head .who .m{ font-family:'Space Mono',monospace; font-size:11.5px; color:var(--ink-3); }
+.art-head .stat{ margin-left:auto; display:flex; gap:8px; }
+.art-head .stat span{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-2); border:1.5px solid var(--line); border-radius:20px; padding:5px 11px; }
+
+/* アイキャッチ */
+.eyecatch{ border:2px solid var(--ink); border-radius:18px; overflow:hidden; box-shadow:6px 6px 0 var(--ink); margin:24px 0 8px; }
+.eyecatch .ph{ aspect-ratio:16/8; }
+.eyecatch .figbar{ display:flex; align-items:center; gap:8px; padding:10px 16px; border-bottom:2px solid var(--ink); font-family:'Space Mono',monospace; font-size:12px; color:var(--ink-2); }
+.eyecatch .figbar .tdot{ width:10px; height:10px; border-radius:50%; }
+.eyecatch .figbar .name{ margin-left:auto; color:var(--ink-3); }
+.eyecatch .colorbar{ display:flex; height:8px; }
+.eyecatch .colorbar i{ flex:1; }
+
+/* 本文（prose） */
+.prose{ font-size:16px; color:#3a3d42; line-height:1.95; }
+.prose > p{ margin:0 0 22px; }
+.prose h2{ font-family:var(--font-round); font-weight:900; font-size:24px; color:var(--ink); margin:42px 0 16px; display:flex; align-items:center; gap:11px; line-height:1.3; }
+.prose h2 .hn{ font-family:'Space Mono',monospace; font-size:13px; color:#fff; background:var(--ink); padding:3px 9px; border-radius:7px; flex-shrink:0; }
+.prose h3{ font-family:var(--font-round); font-weight:900; font-size:18px; color:var(--ink); margin:30px 0 12px; }
+.prose strong{ font-weight:700; color:var(--ink); background:linear-gradient(180deg,transparent 62%, var(--g-yellow-soft) 62%); padding:0 2px; }
+.prose a{ color:var(--g-blue); text-decoration:underline; text-underline-offset:3px; }
+.prose ul{ margin:0 0 22px; padding-left:4px; list-style:none; }
+.prose ul li{ position:relative; padding-left:26px; margin-bottom:10px; }
+.prose ul li::before{ content:""; position:absolute; left:4px; top:11px; width:9px; height:9px; border-radius:3px; background:var(--g-green); }
+
+/* 引用・メモ */
+.note-box{ border:2px solid var(--ink); border-left-width:8px; border-radius:14px; background:#fff; padding:18px 22px; margin:0 0 24px; }
+.note-box .tag{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+.note-box .tag .d{ width:9px; height:9px; border-radius:50%; }
+.note-box p{ margin:0; font-size:15px; }
+.note-box.hand p{ font-family:var(--font-hand); font-size:16px; color:var(--ink); }
+
+/* コードブロック */
+.code{ border:2px solid var(--ink); border-radius:14px; overflow:hidden; margin:0 0 26px; background:#23262B; box-shadow:5px 5px 0 var(--ink); }
+.code .bar{ display:flex; align-items:center; gap:8px; padding:11px 16px; background:#1A1C20; border-bottom:1px solid #34373D; }
+.code .bar i{ width:11px; height:11px; border-radius:50%; }
+.code .bar .fn{ font-family:'Space Mono',monospace; font-size:12px; color:#9AA0A8; margin-left:8px; }
+.code .bar .copy{ margin-left:auto; font-family:'Space Mono',monospace; font-size:11px; color:#9AA0A8; background:#2C2F35; border:1px solid #3C3F45; border-radius:7px; padding:4px 11px; cursor:pointer; transition:.15s; }
+.code .bar .copy:hover{ color:#fff; border-color:#555; }
+.code pre{ margin:0; padding:18px 20px; overflow-x:auto; }
+.code code{ font-family:'Space Mono',monospace; font-size:13px; line-height:1.85; color:#E4E6EA; white-space:pre; }
+.code .c-key{ color:#FBBC04; } .code .c-fn{ color:#4285F4; } .code .c-str{ color:#34A853; } .code .c-com{ color:#6B7079; } .code .c-num{ color:#EA8A80; }
+
+/* おまけ情報パネル */
+.bonus{ border:2px solid var(--ink); border-radius:18px; background:#fff; overflow:hidden; margin:40px 0 10px; box-shadow:6px 6px 0 var(--ink); }
+.bonus .bh{ display:flex; align-items:center; gap:11px; padding:16px 22px; background:var(--g-green); color:#fff; border-bottom:2px solid var(--ink); }
+.bonus .bh .ic{ font-size:18px; } .bonus .bh h2{ font-family:var(--font-round); font-weight:900; font-size:18px; margin:0; }
+.bonus .bh .tag{ margin-left:auto; font-family:var(--font-hand); font-size:14px; opacity:.95; }
+.bonus .grid2{ display:grid; grid-template-columns:1fr 1fr; }
+.bonus .blk{ padding:20px 22px; border-right:1.5px dashed var(--line); border-bottom:1.5px dashed var(--line); }
+.bonus .grid2 .blk:nth-child(2n){ border-right:none; }
+.bonus .blk h4{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em; margin:0 0 12px; }
+.bonus .tools{ display:flex; flex-wrap:wrap; gap:8px; }
+.bonus .tools span{ font-family:var(--font-round); font-weight:700; font-size:13px; border:1.5px solid var(--ink); border-radius:9px; padding:7px 13px; display:inline-flex; align-items:center; gap:8px; background:#FBF8F1; }
+.bonus .tools span .d{ width:9px; height:9px; border-radius:3px; }
+.bonus .apilist{ font-family:'Space Mono',monospace; font-size:12.5px; }
+.bonus .apilist .r{ display:flex; gap:10px; padding:7px 0; border-bottom:1px dashed var(--line); align-items:center; }
+.bonus .apilist .r:last-child{ border-bottom:none; }
+.bonus .apilist .mth{ color:#fff; padding:2px 8px; border-radius:6px; font-size:10.5px; }
+.bonus .prompt{ grid-column:1/-1; border-bottom:none; }
+.bonus .promptbox{ background:#FBF8F1; border:1.5px solid var(--line); border-radius:11px; padding:15px 17px; font-family:'Space Mono',monospace; font-size:12.5px; color:var(--ink-2); line-height:1.7; position:relative; }
+.bonus .promptbox .you{ color:var(--g-blue); font-weight:700; }
+
+/* 著者ボックス */
+.author{ border:2px solid var(--ink); border-radius:18px; background:var(--ink); color:#fff; padding:26px 28px; display:flex; gap:20px; align-items:center; margin:36px 0 0; position:relative; overflow:hidden; }
+.author .corner{ position:absolute; top:0; right:0; display:flex; } .author .corner i{ width:24px; height:24px; }
+.author .av{ width:64px; height:64px; border-radius:16px; color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--font-round); font-weight:900; font-size:26px; border:2px solid #fff; flex-shrink:0; }
+.author .name{ font-family:var(--font-round); font-weight:900; font-size:18px; }
+.author .role{ font-family:var(--font-hand); font-size:14px; color:var(--g-yellow); }
+.author p{ font-size:13.5px; color:#D9DBE0; margin:7px 0 0; }
+.author .go{ margin-left:auto; flex-shrink:0; }
+
+/* サイドバー */
+.aside{ position:sticky; top:88px; display:flex; flex-direction:column; gap:18px; }
+.toc{ border:2px solid var(--ink); border-radius:16px; background:#fff; padding:20px; }
+.toc h4{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em; margin:0 0 12px; }
+.toc a{ display:block; font-size:13.5px; color:var(--ink-2); padding:7px 0 7px 14px; border-left:2px solid var(--line); transition:.15s; }
+.toc a:hover{ color:var(--g-blue); border-color:var(--g-blue); }
+.share{ border:2px solid var(--ink); border-radius:16px; background:#fff; padding:18px 20px; }
+.share h4{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); text-transform:uppercase; margin:0 0 12px; }
+.share .row{ display:flex; gap:8px; }
+.share .row a{ flex:1; border:1.5px solid var(--ink); border-radius:10px; text-align:center; padding:9px 0; font-family:var(--font-round); font-weight:700; font-size:13px; transition:.15s; }
+.share .row a:hover{ background:#EFEAE0; }
+
+/* 関連記事 */
+.related .rel-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.rel{ border:2px solid var(--ink); border-radius:16px; background:#fff; overflow:hidden; display:flex; flex-direction:column; transition:.16s; }
+.rel:hover{ transform:translate(-3px,-3px); box-shadow:5px 5px 0 var(--ink); }
+.rel .ph{ aspect-ratio:16/9; }
+.rel .body{ padding:15px 17px 17px; }
+.rel .cat{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:6px; }
+.rel .cat i{ width:9px; height:9px; border-radius:2px; }
+.rel h3{ font-family:var(--font-round); font-weight:900; font-size:15.5px; line-height:1.45; margin:9px 0 0; }
+
+/* prev / next */
+.prevnext{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
+.pn{ border:2px solid var(--ink); border-radius:14px; background:#fff; padding:16px 20px; transition:.16s; }
+.pn:hover{ transform:translateY(-3px); box-shadow:4px 5px 0 var(--ink); }
+.pn .k{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); }
+.pn h4{ font-family:var(--font-round); font-weight:900; font-size:14.5px; margin:7px 0 0; line-height:1.4; }
+.pn.next{ text-align:right; }
+
+@media (max-width:980px){ .art-layout{ grid-template-columns:1fr; } .aside{ position:static; flex-direction:row; flex-wrap:wrap; } .aside > *{ flex:1; min-width:220px; } }
+@media (max-width:720px){ .bonus .grid2{ grid-template-columns:1fr; } .bonus .blk{ border-right:none; } .related .rel-grid{ grid-template-columns:1fr; } .prevnext{ grid-template-columns:1fr; } .art-head .stat{ width:100%; margin-left:0; } }
+</style>
+</head>
+<body>
+
+<nav class="bar"><div class="wrap">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="">ALL-IN GAS</a>
+  <div class="links">
+    <a href="articles.html" class="on">記事</a>
+    <a href="activities.html">活動</a>
+    <a href="members.html">メンバー</a>
+    <span class="status"><span class="dot"></span>メンバー募集中</span>
+    <a href="join.html" class="join">参加する</a>
+  </div>
+</div></nav>
+
+<!-- 記事ヘッダ -->
+<header class="page-hero" style="padding-bottom:8px"><div class="wrap">
+  <div class="crumb"><a href="index.html">Top</a> <span>/</span> <a href="articles.html">articles</a> <span>/</span> <span>log_018</span></div>
+  <div class="art-head" style="margin-top:18px">
+    <span class="cat" style="background:var(--g-green)"><i style="width:9px;height:9px;border-radius:2px;background:#fff;display:block"></i>ゆるテック実験室</span>
+    <h1>GASで日報を自動化してみた<br>（途中経過つき）</h1>
+    <div class="byline">
+      <div class="av" style="background:var(--g-red)">ヤ</div>
+      <div class="who"><b>やまだ</b><div class="m mono">@yamada ・ GAS自動化おじさん</div></div>
+      <div class="stat">
+        <span>2026.05.18</span><span>読了 6分</span><span>♥ 42</span>
+      </div>
+    </div>
+  </div>
+</div></header>
+
+<!-- アイキャッチ -->
+<div class="wrap">
+  <div class="eyecatch">
+    <div class="figbar"><span class="tdot" style="background:var(--g-red)"></span><span class="tdot" style="background:var(--g-yellow)"></span><span class="tdot" style="background:var(--g-green)"></span>fig.01 — daily_report_bot<span class="name">eyecatch.jpg</span></div>
+    <div class="ph"><span>アイキャッチ</span></div>
+    <div class="colorbar"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+  </div>
+</div>
+
+<!-- 本文 + サイド -->
+<section style="padding:30px 0"><div class="wrap">
+  <div class="art-layout">
+
+    <!-- 本文 -->
+    <article class="prose">
+      <p>毎日の日報、書いてますか？私はずっと手書きで、「昨日と同じこと書いてるな…」と思いながら埋めていました。<strong>同じことを繰り返しているなら、自動化できるはず。</strong>そう思って、GASで日報の下書きを自動生成する仕組みを作ってみた記録です。完成形ではなく、途中経過も含めて正直に残します。</p>
+
+      <h2 id="s1"><span class="hn mono">01</span>やりたかったこと</h2>
+      <p>ゴールはシンプル。毎朝、その日のカレンダー予定とTODOをまとめた<strong>日報の下書き</strong>を、自動でスプレッドシートに作っておく。あとは実績をちょい足しするだけ、という状態にしたかったんです。</p>
+      <ul>
+        <li>カレンダーから「今日の予定」を自動で取得する</li>
+        <li>前日の「やり残しTODO」を引き継ぐ</li>
+        <li>毎朝8時に、自動でシートに行を追加しておく</li>
+      </ul>
+
+      <div class="note-box hand" style="border-left-color:var(--g-blue)">
+        <div class="tag mono"><span class="d" style="background:var(--g-blue)"></span>memo</div>
+        <p>「全部いっぺんに作ろう」とせず、まず①のカレンダー取得だけ動かしてみたのが正解でした。</p>
+      </div>
+
+      <h2 id="s2"><span class="hn mono">02</span>まず動かした最小コード</h2>
+      <p>いきなり完璧を目指さず、<strong>「今日の予定をログに出すだけ」</strong>から始めました。これだけで「あ、ちゃんと取れてる」と分かって安心できます。</p>
+
+      <div class="code">
+        <div class="bar"><i style="background:var(--g-red)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i><span class="fn">Code.gs</span><button class="copy" data-copy>copy</button></div>
+        <pre><code><span class="c-com">// 今日の予定をログに出すだけの最小版</span>
+<span class="c-key">function</span> <span class="c-fn">logTodayEvents</span>() {
+  <span class="c-key">const</span> cal = CalendarApp.<span class="c-fn">getDefaultCalendar</span>();
+  <span class="c-key">const</span> events = cal.<span class="c-fn">getEventsForDay</span>(<span class="c-key">new</span> <span class="c-fn">Date</span>());
+  events.<span class="c-fn">forEach</span>(e =&gt; {
+    Logger.<span class="c-fn">log</span>(e.<span class="c-fn">getTitle</span>() + <span class="c-str">" / "</span> + e.<span class="c-fn">getStartTime</span>());
+  });
+}</code></pre>
+      </div>
+
+      <h2 id="s3"><span class="hn mono">03</span>つまずいたところ</h2>
+      <p>順調…と思いきや、ちゃんとハマりました。せっかくなので失敗も残します。</p>
+      <h3>① 終日予定の時刻がおかしい</h3>
+      <p>終日イベントの <code>getStartTime()</code> がタイムゾーンの関係で前日になることがありました。<strong>AIに聞いて</strong>「終日かどうかを <code>isAllDayEvent()</code> で分岐する」と教わって解決。</p>
+      <h3>② トリガーが動かない</h3>
+      <p>毎朝の自動実行が動かない…原因は<strong>時間主導型トリガーの設定し忘れ</strong>。コードだけ書いても動かないんですね。ここは1時間溶かしました。</p>
+
+      <div class="note-box" style="border-left-color:var(--g-red)">
+        <div class="tag mono"><span class="d" style="background:var(--g-red)"></span>failure_log</div>
+        <p>「コードが正しいのに動かない」ときは、だいたい<strong>トリガーか権限</strong>。コードの外側を疑うクセがつきました。</p>
+      </div>
+
+      <h2 id="s4"><span class="hn mono">04</span>いまの状態と、これから</h2>
+      <p>①②はクリア。毎朝、予定入りの日報下書きがシートに並ぶところまで来ました。<strong>TODOの引き継ぎ（③）はまだ未実装</strong>です。次はここをAIと一緒に作る予定。できたらまた記事にします。</p>
+      <p>未経験から始めても、<strong>「小さく動かす → つまずく → 聞く → 直す」</strong>を繰り返せば、ちゃんと前に進める。それがいちばんの収穫でした。</p>
+
+      <!-- おまけ情報 -->
+      <div class="bonus">
+        <div class="bh"><span class="ic">🧰</span><h2>おまけ情報（再現用）</h2><span class="tag">＼ コピペで試せます ／</span></div>
+        <div class="grid2">
+          <div class="blk">
+            <h4>使用ツール</h4>
+            <div class="tools">
+              <span><span class="d" style="background:var(--g-blue)"></span>Google Apps Script</span>
+              <span><span class="d" style="background:var(--g-green)"></span>Google カレンダー</span>
+              <span><span class="d" style="background:#E0A500"></span>スプレッドシート</span>
+              <span><span class="d" style="background:var(--g-red)"></span>AI（壁打ち）</span>
+            </div>
+          </div>
+          <div class="blk">
+            <h4>使ったAPI / メソッド</h4>
+            <div class="apilist">
+              <div class="r"><span class="mth" style="background:var(--g-blue)">Calendar</span>getEventsForDay()</div>
+              <div class="r"><span class="mth" style="background:var(--g-green)">Event</span>isAllDayEvent()</div>
+              <div class="r"><span class="mth" style="background:#E0A500">Sheet</span>appendRow()</div>
+              <div class="r"><span class="mth" style="background:var(--g-red)">Trigger</span>timeBased()</div>
+            </div>
+          </div>
+          <div class="blk prompt">
+            <h4>AIに投げたプロンプト（抜粋）</h4>
+            <div class="promptbox">
+              <span class="you">you ▸</span> GASで、Googleカレンダーの「今日の終日予定」だけ別扱いしたい。終日かどうかで時刻表示を分岐するコードを書いて。あと、毎朝8時に自動実行するトリガーの設定手順も、画面の場所まで含めて教えて。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 著者 -->
+      <div class="author">
+        <div class="corner"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+        <div class="av" style="background:var(--g-red)">ヤ</div>
+        <div>
+          <div class="name">やまだ</div>
+          <div class="role">GAS自動化おじさん ・ 実験室部長</div>
+          <p>気づけば身のまわりを自動化している。「まず動かす、あとで直す」が信条。</p>
+        </div>
+        <a href="members.html" class="btn btn-y go">プロフィール →</a>
+      </div>
+
+      <!-- prev / next -->
+      <div class="prevnext">
+        <a href="articles.html" class="pn prev"><div class="k mono">← prev</div><h4>議事録、AIに要約させたら会議が変わった</h4></a>
+        <a href="articles.html" class="pn next"><div class="k mono">next →</div><h4>LINEに毎朝、天気とゴミ出しを通知する</h4></a>
+      </div>
+    </article>
+
+    <!-- サイド -->
+    <aside class="aside">
+      <div class="toc">
+        <h4>// 目次</h4>
+        <a href="#s1">01 やりたかったこと</a>
+        <a href="#s2">02 まず動かした最小コード</a>
+        <a href="#s3">03 つまずいたところ</a>
+        <a href="#s4">04 いまの状態と、これから</a>
+      </div>
+      <div class="share">
+        <h4>// share</h4>
+        <div class="row"><a href="#">X</a><a href="#">LINE</a><a href="#">copy</a></div>
+      </div>
+    </aside>
+  </div>
+</div></section>
+
+<hr class="rule">
+
+<!-- 関連記事 -->
+<section class="related" style="padding:34px 0"><div class="wrap">
+  <div class="sec-head"><span class="tick">more</span><h2>関連する記事</h2><span class="en">// related_logs</span></div>
+  <div class="rel-grid">
+    <a href="articles.html" class="rel"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-green)"><i style="background:var(--g-green)"></i>ゆるテック実験室</span><h3>スプレッドシートを簡易データベースにする</h3></div></a>
+    <a href="articles.html" class="rel"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-blue)"><i style="background:var(--g-blue)"></i>ライフハック</span><h3>議事録、AIに要約させたら会議が変わった</h3></div></a>
+    <a href="articles.html" class="rel"><div class="ph"><span>アイキャッチ</span></div><div class="body"><span class="cat" style="color:var(--g-blue)"><i style="background:var(--g-blue)"></i>ライフハック</span><h3>フォーム回答を自動でSlackに流す</h3></div></a>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta-band"><div class="wrap">
+  <div class="box">
+    <div class="corner"><i style="background:var(--g-red)"></i><i style="background:var(--g-blue)"></i><i style="background:var(--g-yellow)"></i><i style="background:var(--g-green)"></i></div>
+    <div>
+      <div class="hand">＼ あなたの「やってみた」も ／</div>
+      <h2>記事、書いてみませんか？</h2>
+      <p>途中経過も、失敗ログも、誰かのヒントになります。メンバーになると、あなたの実験も記事にできます。</p>
+    </div>
+    <div class="actions">
+      <a href="join.html" class="btn btn-y">仲間になる →</a>
+      <a href="articles.html" class="btn btn-ghost">記事一覧へ</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="logo"><img src="assets/logo.png" alt="">ALL-IN GAS</div>
+      <div class="desc">佐賀発・非エンジニアのための「ゆるテック」実践型コミュニティ。GAS・Google Workspace・AI を、ゆるく実践しながら学んでいます。</div>
+    </div>
+    <div><h5>Sitemap</h5><a href="index.html">Top</a><a href="articles.html">ゆるテック記事</a><a href="activities.html">活動紹介</a><a href="members.html">メンバー</a></div>
+    <div><h5>Join</h5><a href="join.html">参加申し込み</a><a href="join.html">お問い合わせ</a><a href="join.html">よくある質問</a></div>
+  </div>
+  <div class="copy">© 2026 ALL-IN GAS — YURU-TECH MEDIA ・ made_in_saga</div>
+</div></footer>
+
+<script>
+// copy ボタン
+document.querySelectorAll('[data-copy]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const code=btn.closest('.code').querySelector('code').innerText;
+    navigator.clipboard?.writeText(code);
+    const t=btn.textContent; btn.textContent='copied!'; setTimeout(()=>btn.textContent=t,1400);
+  });
+});
+// 目次スムーススクロール
+document.querySelectorAll('.toc a').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const el=document.querySelector(a.getAttribute('href'));
+    if(el) window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-84, behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>参加申し込み・お問い合わせ ｜ ALL-IN GAS</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* ---- 参加・お問い合わせページ固有 ---- */
+.layout{ display:grid; grid-template-columns:1.25fr .85fr; gap:28px; align-items:start; }
+
+/* フォームカード */
+.formcard{ border:2px solid var(--ink); border-radius:18px; background:#fff; overflow:hidden; box-shadow:6px 6px 0 var(--ink); }
+.formcard .tabs{ display:flex; border-bottom:2px solid var(--ink); }
+.formcard .tabs button{ flex:1; font-family:var(--font-round); font-weight:900; font-size:15px; padding:16px; background:#F3EEE2; color:var(--ink-2); border:none; cursor:pointer; transition:.15s; border-right:2px solid var(--ink); display:flex; align-items:center; justify-content:center; gap:8px; }
+.formcard .tabs button:last-child{ border-right:none; }
+.formcard .tabs button .d{ width:10px; height:10px; border-radius:50%; }
+.formcard .tabs button.on{ background:#fff; color:var(--ink); }
+.formcard .panel{ padding:30px 32px 34px; }
+.formcard .panel.hide{ display:none; }
+.formcard .intro{ font-size:14px; color:var(--ink-2); margin:0 0 22px; }
+
+.field{ margin-bottom:18px; }
+.field label{ display:block; font-family:var(--font-round); font-weight:700; font-size:13.5px; margin-bottom:7px; display:flex; align-items:center; gap:8px; }
+.field label .req{ font-family:'Space Mono',monospace; font-size:10px; color:#fff; background:var(--g-red); padding:2px 7px; border-radius:20px; }
+.field label .opt{ font-family:'Space Mono',monospace; font-size:10px; color:var(--ink-3); border:1px solid var(--line); padding:2px 7px; border-radius:20px; }
+.field input, .field textarea, .field select{ width:100%; font-family:var(--font-body); font-size:14.5px; color:var(--ink); background:#FBF8F1;
+  border:2px solid var(--line); border-radius:11px; padding:12px 14px; transition:.15s; }
+.field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--g-blue); background:#fff; box-shadow:3px 3px 0 var(--g-blue-soft); }
+.field textarea{ resize:vertical; min-height:110px; }
+.field .err{ display:none; font-family:'Space Mono',monospace; font-size:11px; color:var(--g-red); margin-top:6px; }
+.field.bad input, .field.bad textarea{ border-color:var(--g-red); }
+.field.bad .err{ display:block; }
+
+/* チェックボックス群（興味のある活動） */
+.checks{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.check{ display:flex; align-items:center; gap:10px; border:1.5px solid var(--line); border-radius:11px; padding:11px 13px; cursor:pointer; transition:.15s; font-size:13.5px; font-family:var(--font-round); font-weight:700; }
+.check:hover{ background:#F3EEE2; }
+.check input{ width:auto; accent-color:var(--g-green); }
+.check.sel{ border-color:var(--ink); background:#fff; box-shadow:3px 3px 0 var(--ink); }
+.check .cd{ width:10px; height:10px; border-radius:3px; }
+
+.submit-row{ margin-top:24px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.submit-row .note{ font-family:'Space Mono',monospace; font-size:11px; color:var(--ink-3); }
+
+/* 完了メッセージ */
+.done-msg{ display:none; text-align:center; padding:36px 20px; }
+.done-msg.show{ display:block; }
+.done-msg .badge{ width:84px; height:84px; border-radius:50%; background:var(--g-green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:40px; margin:0 auto 18px; border:2px solid var(--ink); box-shadow:5px 5px 0 var(--ink); }
+.done-msg h3{ font-family:var(--font-round); font-weight:900; font-size:24px; margin:0 0 8px; }
+.done-msg p{ color:var(--ink-2); font-size:14.5px; margin:0 auto; max-width:30em; }
+.done-msg .hand{ font-family:var(--font-hand); color:var(--g-red); margin-top:14px; }
+
+/* サイド */
+.side{ display:flex; flex-direction:column; gap:18px; }
+.sbox{ border:2px solid var(--ink); border-radius:16px; background:#fff; padding:22px 24px; }
+.sbox h3{ font-family:var(--font-round); font-weight:900; font-size:16px; margin:0 0 14px; display:flex; align-items:center; gap:9px; }
+.sbox h3 .t{ font-family:'Space Mono',monospace; font-size:11px; color:#fff; background:var(--ink); padding:3px 9px; border-radius:7px; }
+.sbox .li{ display:flex; gap:11px; padding:10px 0; border-bottom:1.5px dashed var(--line); align-items:flex-start; }
+.sbox .li:last-child{ border-bottom:none; padding-bottom:0; }
+.sbox .li .ic{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.sbox .li b{ font-family:var(--font-round); font-size:14px; display:block; }
+.sbox .li span{ font-size:12.5px; color:var(--ink-2); }
+.sbox.dark{ background:var(--ink); color:#fff; }
+.sbox.dark h3{ color:#fff; }
+.sbox.dark .hand{ font-family:var(--font-hand); color:var(--g-yellow); font-size:15px; }
+.sbox.dark p{ font-size:13.5px; color:#D9DBE0; margin:8px 0 0; }
+
+/* FAQ */
+.faq .item{ border:2px solid var(--ink); border-radius:14px; background:#fff; margin-bottom:12px; overflow:hidden; }
+.faq .q{ display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer; font-family:var(--font-round); font-weight:700; font-size:15px; }
+.faq .q .mk{ font-family:'Space Mono',monospace; font-size:13px; color:#fff; background:var(--g-blue); width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.faq .q .tog{ margin-left:auto; font-family:'Space Mono',monospace; color:var(--ink-3); transition:.2s; }
+.faq .item.open .q .tog{ transform:rotate(45deg); }
+.faq .a{ max-height:0; overflow:hidden; transition:max-height .25s ease; }
+.faq .a p{ padding:0 20px 18px 58px; margin:0; font-size:14px; color:var(--ink-2); }
+.faq .item.open .a{ max-height:200px; }
+
+@media (max-width:920px){ .layout{ grid-template-columns:1fr; } .checks{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="bar"><div class="wrap">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="">ALL-IN GAS</a>
+  <div class="links">
+    <a href="articles.html">記事</a>
+    <a href="activities.html">活動</a>
+    <a href="members.html">メンバー</a>
+    <span class="status"><span class="dot"></span>メンバー募集中</span>
+    <a href="join.html" class="join on" style="color:#fff">参加する</a>
+  </div>
+</div></nav>
+
+<!-- PAGE HERO -->
+<header class="page-hero"><div class="wrap">
+  <div class="crumb"><a href="index.html">Top</a> <span>/</span> <span>join</span></div>
+  <div class="row">
+    <span class="tick">05</span>
+    <h1>参加・<span class="hl">お問い合わせ</span></h1>
+    <span class="en">// join_and_contact</span>
+  </div>
+  <p class="lead">「やってみたい」「ちょっと困ってる」その気持ちだけ持ってきてください。コミュニティへの参加も、お仕事のご相談も、このページから。まずはのぞいてみるだけでも大歓迎です。</p>
+</div></header>
+
+<!-- FORM + SIDE -->
+<section id="form" style="padding:14px 0; scroll-margin-top:84px"><div class="wrap">
+  <div class="layout">
+
+    <!-- FORM -->
+    <div class="formcard">
+      <div class="tabs" id="tabs">
+        <button class="on" data-tab="join"><span class="d" style="background:var(--g-green)"></span>コミュニティに参加</button>
+        <button data-tab="contact"><span class="d" style="background:var(--g-blue)"></span>お問い合わせ・ご相談</button>
+      </div>
+
+      <!-- 参加フォーム -->
+      <div class="panel" data-panel="join" id="form-area">
+        <p class="intro">下のフォームから、お気軽にお申し込みください。担当から数日以内にご連絡します。<b>費用や強制参加はありません。</b></p>
+        <div class="field"><label>お名前 / ニックネーム <span class="req mono">required</span></label><input type="text" data-required placeholder="例：やまだ / yamada"><div class="err mono">お名前を入力してください</div></div>
+        <div class="field"><label>メールアドレス <span class="req mono">required</span></label><input type="email" data-required data-email placeholder="例：you@example.com"><div class="err mono">正しいメールアドレスを入力してください</div></div>
+        <div class="field"><label>テックの経験 <span class="opt mono">optional</span></label>
+          <select>
+            <option>まったくの未経験です</option>
+            <option>少しだけ触ったことがある</option>
+            <option>仕事で使っている</option>
+            <option>けっこう得意なほう</option>
+          </select>
+        </div>
+        <div class="field"><label>興味のある活動（複数選択OK） <span class="opt mono">optional</span></label>
+          <div class="checks" id="checks">
+            <label class="check"><input type="checkbox"><span class="cd" style="background:var(--g-blue)"></span>月1講座・勉強会</label>
+            <label class="check"><input type="checkbox"><span class="cd" style="background:#E0A500"></span>ゆるテックラジオ</label>
+            <label class="check"><input type="checkbox"><span class="cd" style="background:var(--g-green)"></span>オフライン交流会</label>
+            <label class="check"><input type="checkbox"><span class="cd" style="background:var(--g-red)"></span>分科会・部活動</label>
+          </div>
+        </div>
+        <div class="field"><label>ひとこと（任意） <span class="opt mono">optional</span></label><textarea placeholder="「こんなことをやってみたい」「いま困ってること」など、自由にどうぞ。"></textarea></div>
+        <div class="submit-row">
+          <button class="btn btn-green" id="submit-join">この内容で申し込む →</button>
+          <span class="note">// 入力内容は送信されません（デモ）</span>
+        </div>
+      </div>
+
+      <!-- お問い合わせフォーム -->
+      <div class="panel hide" data-panel="contact">
+        <p class="intro">活動の取材、お仕事のご相談（GAS開発・AI活用支援・デザインなど）、その他のお問い合わせはこちらから。</p>
+        <div class="field"><label>お名前・会社名 <span class="req mono">required</span></label><input type="text" data-required placeholder="例：株式会社○○ 田中"><div class="err mono">お名前を入力してください</div></div>
+        <div class="field"><label>メールアドレス <span class="req mono">required</span></label><input type="email" data-required data-email placeholder="例：contact@example.com"><div class="err mono">正しいメールアドレスを入力してください</div></div>
+        <div class="field"><label>ご相談の種類 <span class="opt mono">optional</span></label>
+          <select>
+            <option>お仕事のご相談（GAS / AI / デザイン）</option>
+            <option>取材・登壇のご依頼</option>
+            <option>コラボ・連携のご提案</option>
+            <option>その他</option>
+          </select>
+        </div>
+        <div class="field"><label>お問い合わせ内容 <span class="req mono">required</span></label><textarea data-required placeholder="ご相談の内容を、わかる範囲でお書きください。"></textarea><div class="err mono">内容を入力してください</div></div>
+        <div class="submit-row">
+          <button class="btn btn-primary" id="submit-contact">送信する →</button>
+          <span class="note">// 入力内容は送信されません（デモ）</span>
+        </div>
+      </div>
+
+      <!-- 完了 -->
+      <div class="panel done-msg" id="done">
+        <div class="badge">✓</div>
+        <h3>ありがとうございます！</h3>
+        <p>お申し込み・お問い合わせを受け付けました。担当から数日以内にご連絡しますので、少々お待ちください。</p>
+        <p class="hand">＼ お会いできるのを楽しみにしています ／</p>
+        <div style="margin-top:22px"><a href="index.html" class="btn btn-ghost">トップに戻る</a></div>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <div class="side">
+      <div class="sbox dark">
+        <h3 style="color:#fff">＼ 不安な人へ ／</h3>
+        <p class="hand">「未経験だけど大丈夫かな…」</p>
+        <p>大丈夫です。メンバーのほとんどが、はじめは未経験から。発言しなくても、見学だけでもOK。あなたのペースで関わってください。</p>
+      </div>
+      <div class="sbox">
+        <h3><span class="t mono">info</span>こんな人が来ています</h3>
+        <div class="li"><div class="ic" style="background:var(--g-blue-soft)">💼</div><div><b>非エンジニアの会社員</b><span>業務を少し楽にしたい人</span></div></div>
+        <div class="li"><div class="ic" style="background:var(--g-green-soft)">🏪</div><div><b>個人事業・小さな会社の方</b><span>ひとりで何でもやる人</span></div></div>
+        <div class="li"><div class="ic" style="background:var(--g-red-soft)">🎨</div><div><b>作るのが好きな人</b><span>デザイン・企画・発信好き</span></div></div>
+      </div>
+      <div class="sbox">
+        <h3><span class="t mono">contact</span>その他の連絡先</h3>
+        <div class="li"><div class="ic" style="background:var(--g-yellow-soft)">✉️</div><div><b class="mono" style="font-size:13px">hello@all-in-gas.jp</b><span>メールでの連絡先（例）</span></div></div>
+        <div class="li"><div class="ic" style="background:var(--g-blue-soft)">📍</div><div><b>佐賀県・オンライン</b><span>活動拠点</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<hr class="rule">
+
+<!-- FAQ -->
+<section id="faq-section" style="padding:34px 0; scroll-margin-top:84px"><div class="wrap">
+  <div class="sec-head"><span class="tick">faq</span><h2>よくある質問</h2><span class="en">// faq</span></div>
+  <div class="faq" id="faq">
+    <div class="item"><div class="q"><span class="mk mono">Q</span>プログラミングが全くできなくても参加できますか？<span class="tog">＋</span></div><div class="a"><p>もちろんです。ALL-IN GAS は「非エンジニアのためのコミュニティ」。メンバーの多くが未経験から始めています。「できる / できない」より「やってみたい」を大切にしています。</p></div></div>
+    <div class="item"><div class="q"><span class="mk mono">Q</span>費用はかかりますか？<span class="tog">＋</span></div><div class="a"><p>基本的な参加は無料です（一部の特別イベント等で実費をいただく場合があります）。まずはお気軽にのぞいてみてください。</p></div></div>
+    <div class="item"><div class="q"><span class="mk mono">Q</span>佐賀に住んでいないと参加できませんか？<span class="tog">＋</span></div><div class="a"><p>いいえ。活動の多くはオンラインなので、どこからでも参加できます。佐賀発ですが、地域を問わず仲間が集まっています。</p></div></div>
+    <div class="item"><div class="q"><span class="mk mono">Q</span>毎回参加しないとダメですか？<span class="tog">＋</span></div><div class="a"><p>まったく問題ありません。気になる活動だけ、できるときに。アーカイブもあるので、自分のペースで関われます。</p></div></div>
+    <div class="item"><div class="q"><span class="mk mono">Q</span>仕事の相談（開発や支援）もできますか？<span class="tog">＋</span></div><div class="a"><p>はい。GAS開発・AI活用支援・デザインなどのご相談は、上の「お問い合わせ・ご相談」タブからお送りください。</p></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="logo"><img src="assets/logo.png" alt="">ALL-IN GAS</div>
+      <div class="desc">佐賀発・非エンジニアのための「ゆるテック」実践型コミュニティ。GAS・Google Workspace・AI を、ゆるく実践しながら学んでいます。</div>
+    </div>
+    <div><h5>Sitemap</h5><a href="index.html">Top</a><a href="articles.html">ゆるテック記事</a><a href="activities.html">活動紹介</a><a href="members.html">メンバー</a></div>
+    <div><h5>Join</h5><a href="join.html">参加申し込み</a><a href="join.html">お問い合わせ</a><a href="join.html">よくある質問</a></div>
+  </div>
+  <div class="copy">© 2026 ALL-IN GAS — YURU-TECH MEDIA ・ made_in_saga</div>
+</div></footer>
+
+<script>
+// タブ切替
+const tabs=document.getElementById('tabs');
+const panels=[...document.querySelectorAll('.panel[data-panel]')];
+const doneMsg=document.getElementById('done');
+tabs.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  [...tabs.children].forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  doneMsg.classList.remove('show');
+  panels.forEach(p=>p.classList.toggle('hide', p.dataset.panel!==b.dataset.tab));
+});
+
+// チェックボックス見た目
+document.getElementById('checks').addEventListener('change',e=>{
+  const lab=e.target.closest('.check'); if(lab) lab.classList.toggle('sel', e.target.checked);
+});
+
+// バリデーション + 送信
+function validate(panel){
+  let ok=true;
+  panel.querySelectorAll('[data-required]').forEach(inp=>{
+    const f=inp.closest('.field'); let bad=false;
+    if(!inp.value.trim()) bad=true;
+    if(inp.hasAttribute('data-email') && inp.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value)) bad=true;
+    f.classList.toggle('bad', bad); if(bad) ok=false;
+  });
+  return ok;
+}
+function submit(tab){
+  const panel=document.querySelector('.panel[data-panel="'+tab+'"]');
+  if(!validate(panel)) { panel.querySelector('.bad input, .bad textarea')?.focus(); return; }
+  panels.forEach(p=>p.classList.add('hide'));
+  doneMsg.classList.add('show');
+  window.scrollTo({top:document.querySelector('.formcard').offsetTop-90, behavior:'smooth'});
+}
+document.getElementById('submit-join').addEventListener('click',()=>submit('join'));
+document.getElementById('submit-contact').addEventListener('click',()=>submit('contact'));
+
+// #contact で来たらお問い合わせタブを開く
+function openTab(tab){
+  [...tabs.children].forEach(x=>x.classList.toggle('on', x.dataset.tab===tab));
+  doneMsg.classList.remove('show');
+  panels.forEach(p=>p.classList.toggle('hide', p.dataset.panel!==tab));
+}
+if(location.hash==='#contact'){ openTab('contact'); }
+window.addEventListener('hashchange',()=>{ if(location.hash==='#contact') openTab('contact'); });
+// 入力で赤を消す
+document.querySelectorAll('.field input, .field textarea').forEach(inp=>{
+  inp.addEventListener('input',()=>inp.closest('.field').classList.remove('bad'));
+});
+
+// FAQ
+document.getElementById('faq').addEventListener('click',e=>{
+  const q=e.target.closest('.q'); if(!q) return;
+  q.parentElement.classList.toggle('open');
+});
+</script>
+</body>
+</html>
