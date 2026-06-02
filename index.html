@@ -210,9 +210,9 @@ footer .copy{ font-family:'Space Mono',monospace; margin-top:34px; padding-top:2
   </div>
   <div class="visual">
     <div class="card">
-      <div class="figbar"><span class="tdot" style="background:var(--g-red)"></span><span class="tdot" style="background:var(--g-yellow)"></span><span class="tdot" style="background:var(--g-green)"></span>fig.01 — yuru_tech<span class="name" id="figname">main_visual.jpg</span></div>
+      <div class="figbar"><span class="tdot" style="background:var(--g-red)"></span><span class="tdot" style="background:var(--g-yellow)"></span><span class="tdot" style="background:var(--g-green)"></span>fig.01 — yuru_tech<span class="name" id="figname">main_visual.png</span></div>
       <div class="track" id="track">
-        <div class="slide"><div class="ph"><span>メインビジュアル 1</span></div></div>
+        <div class="slide"><img src="assets/main_visual.png" alt="ALL-IN GAS のLT会のようす（テーマ：ゆるく使えるAIツール）" style="width:100%; aspect-ratio:4/3.3; object-fit:cover; display:block;"></div>
         <div class="slide"><div class="ph"><span>講座のようす 2</span></div></div>
         <div class="slide"><div class="ph"><span>もくもく会 3</span></div></div>
         <div class="slide"><div class="ph"><span>デザイン部 4</span></div></div>
@@ -234,7 +234,7 @@ footer .copy{ font-family:'Space Mono',monospace; margin-top:34px; padding-top:2
   const slides=[...track.children];
   const dotsWrap=document.getElementById('cdots');
   const figname=document.getElementById('figname');
-  const names=['main_visual.jpg','lecture_01.jpg','mokumoku.jpg','design_team.jpg'];
+  const names=['main_visual.png','lecture_01.jpg','mokumoku.jpg','design_team.jpg'];
   let i=0, timer;
   slides.forEach((_,n)=>{ const d=document.createElement('button'); d.className='dot'+(n===0?' on':''); d.addEventListener('click',()=>{go(n);reset();}); dotsWrap.appendChild(d); });
   const dots=[...dotsWrap.children];
